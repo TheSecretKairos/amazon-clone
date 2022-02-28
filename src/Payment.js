@@ -7,6 +7,7 @@ import { useElements, useStripe, CardElement } from '@stripe/react-stripe-js';
 import CurrencyFormat from 'react-currency-format';
 import { getBasketTotal } from "./reducer"
 import axios from './axios';
+import { db } from './firebase'
 
 
 function Payment() {
@@ -32,37 +33,54 @@ function Payment() {
                 //stripe expects the total in a currencies subunits
                 url: `/payments/create?total=${getBasketTotal(basket) * 100}`
             });
-            setClientSecret(response.data.clientSecret)
+            setClientSecret(response.data.clientSecret);
         }
         getClientSecret();
-    }, [basket])
+    }, [basket]);
+
+    console.log('THE SECRET ID IS >>>', clientSecret);
 
     const handleSubmit = async (event) => {
-        //do all the stripe fancy stuff
         event.preventDefault();
         setProcessing(true);
 
         const payload = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
-                card: elements.getElement(CardElement
-                )
+                card: elements.getElement(CardElement)
             }
         }).then(({ paymentIntent }) => {
             //paymentIntend= payment confirmation
+
+            db
+                .collection('users')
+                .doc(user?.uid)
+                .collection("orders") //prima ''
+                .doc(paymentIntent.id)
+                .set({
+                    basket: basket,
+                    amount: paymentIntent.amount,
+                    created: paymentIntent.created,
+                });
+
+
             setSucceded(true);
-            setError(null)
-            setProcessing(false)
+            setError(null);
+            setProcessing(false);
+
+            dispatch({
+                type: 'EMPTY_BASKET'
+            });
 
             history.replace('/orders');
-        })
-    }
+        });
+    };
 
     const handleChange = event => {
 
         //Listen for cahnges in the CardElement
         //and display any errors as the customer types their card details
         setDisabled(event.empty);
-        setError(event.error ? event.errpr.message : "");
+        setError(event.error ? event.error.message : "");
     }
 
     return (
@@ -73,7 +91,6 @@ function Payment() {
                     <Link to="/checkout">{basket?.length} items</Link>
                     )
                 </h1>
-
 
 
                 {/* Payment section - delivery address */}
@@ -108,7 +125,7 @@ function Payment() {
                 {/* Payment section - payment method */}
                 <div className='payment__section'>
                     <div className='payment__title'>
-                        <h3>Payment method</h3>
+                        <h3>Metodo di Pagamento</h3>
                     </div>
                     <div className='payment__details'>
                         {/* stripe magic will go */}
@@ -126,11 +143,11 @@ function Payment() {
                                     value={getBasketTotal(basket)}
                                     displayType={"text"}
                                     thousandSeparator={true}
-                                    pprefix={"€"}
+                                    prefix={"€"}
                                 />
                                 <button disabled={processing || disabled || succeded}
                                 >
-                                    <span>{processing ? <p>Processing</p> : "Compra ora"}
+                                    <span>{processing ? <p>Processing...</p> : "Compra ora"}
                                     </span>
                                 </button>
                             </div>
