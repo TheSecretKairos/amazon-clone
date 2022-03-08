@@ -16,9 +16,9 @@ app.use(express.json());
 //API routes
 
 //app.get('/', (request, response) => response.status(200).send('Ciao mondo'));
-app.post('/payments/create', async(request,response) => {
+app.post('/payments/create', async(req,res) => {
 
-    const total = request.query.total;
+    const total = req.query.total;
 
     console.log('Ricevuta richiesta pagamento. Totale >>>', total);
 
@@ -26,10 +26,11 @@ app.post('/payments/create', async(request,response) => {
         amount: total,
         currency: "eur",
     });
+
     //OK - Created
-    response.status(201).send({
+    res.status(201).send({
         clientSecret: paymentIntent.client_secret,
-    })
+    });
 });
 
 //listen command

@@ -9,7 +9,7 @@ import Payment from "./Payment";
 import { auth } from "./firebase"
 import { useStateValue } from "./StateProvider";
 import { loadStripe } from "@stripe/stripe-js"
-import { Elements } from "@stripe/react-stripe-js"
+import { Elements } from "@stripe/react-stripe-js";
 import Orders from "./Orders";
 
 //router-version precedente: 6.2.1
@@ -29,16 +29,16 @@ function App() {
         dispatch({
           type: 'SET_USER',
           user: authUser
-        })
+        });
       } else {
         //the user is logged out
         dispatch({
           type: 'SET_USER',
           user: null
-        })
+        });
       }
     })
-  }, [])
+  }, []);
 
   return (
     <BrowserRouter>
