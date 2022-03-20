@@ -56,7 +56,7 @@ function Login() {
                         onClick={signIn}
                         className='login__signInButton'>Sign in</button>
                 </form>
-                <p>Accedendo, acetti i termini e condizioni di Amazon-Clone a rubarti i dati e rivenderli a terzi per scopi puramenti di lucro senza considerare la tua persona e trattandoti come la merce che Amazon Inc. vende ;) .</p>
+                <p>Accedendo, acetti i termini e condizioni di Amazon-Clone a rubarti i dati e rivenderli a terzi per scopi puramenti di lucro senza considerare la tua persona e trattandoti come la merce che Amazon-Clone Inc. vende ;) .</p>
                 <button onClick={register}
                     className='login__registerButton'>Crea il tuo account Amazon</button>
             </div>
